@@ -36,10 +36,31 @@ async function run() {
 
     app.get("/service/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(req.params);
       const query = { _id: ObjectId(id) };
       const singlePart = await collection.findOne(query);
       res.send(singlePart);
+    });
+
+    app.patch("/service/:id", async (req, res) => {
+      const id = req.params.id;
+      const newQuantity = req.body;
+      console.log("Updated Quantity", newQuantity.updatedQuantity);
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          available: newQuantity.updatedQuantity,
+        },
+      };
+      const result = await collection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    //updating available quantity after a order has been placed
+    app.post("/order", async (req, res) => {
+      const order = req.body;
+      console.log("adding new order", order);
+      const result = await orderCollection.insertOne(order);
+      res.send(result);
     });
   } finally {
   }
