@@ -1,8 +1,10 @@
 const { MongoClient, ServerApiVersion, MongoRuntimeError } = require("mongodb");
-
+const ObjectId = require("mongodb").ObjectId;
 const express = require("express");
 const cors = require("cors");
+// const { ObjectID } = require("bson");
 require("dotenv").config();
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -23,11 +25,21 @@ async function run() {
     console.log(" db connected");
     const collection = client.db("gearsHub").collection("services");
 
+    const orderCollection = client.db("gearsHub").collection("orders");
+
     app.get("/service", async (req, res) => {
       const query = {};
       const cursor = collection.find(query);
       const services = await cursor.toArray();
       res.send(services);
+    });
+
+    app.get("/service/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(req.params);
+      const query = { _id: ObjectId(id) };
+      const singlePart = await collection.findOne(query);
+      res.send(singlePart);
     });
   } finally {
   }
