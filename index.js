@@ -36,6 +36,13 @@ async function run() {
       res.send(services);
     });
 
+    app.get("/service", async (req, res) => {
+      const tool = req.query.email;
+      const query = { email: email };
+      const services = await cursor.toArray();
+      res.send(services);
+    });
+
     app.get("/service/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
@@ -53,8 +60,12 @@ async function run() {
       };
 
       const result = await userCollection.updateOne(filter, updateDoc, options);
-      const token = jwt.sign({email: email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
-      res.send({result, token});
+      const token = jwt.sign(
+        { email: email },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "1h" }
+      );
+      res.send({ result, token });
     });
 
     app.patch("/service/:id", async (req, res) => {
@@ -77,6 +88,14 @@ async function run() {
       console.log("adding new order", order);
       const result = await orderCollection.insertOne(order);
       res.send(result);
+    });
+
+    app.get("/myOrder", async (req, res) => {
+      const email = req.query.email;
+      console.log("email", email);
+      const query = { email: email };
+      const myOrder = await orderCollection.find(query).toArray();
+      res.send(myOrder);
     });
   } finally {
   }
