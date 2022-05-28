@@ -1,5 +1,6 @@
 const { MongoClient, ServerApiVersion, MongoRuntimeError } = require("mongodb");
 const ObjectId = require("mongodb").ObjectId;
+const jwt = require("jsonwebtoken");
 const express = require("express");
 const cors = require("cors");
 // const { ObjectID } = require("bson");
@@ -52,7 +53,8 @@ async function run() {
       };
 
       const result = await userCollection.updateOne(filter, updateDoc, options);
-      res.send(result);
+      const token = jwt.sign({email: email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
+      res.send({result, token});
     });
 
     app.patch("/service/:id", async (req, res) => {
