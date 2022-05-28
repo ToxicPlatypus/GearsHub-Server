@@ -26,6 +26,7 @@ async function run() {
     const collection = client.db("gearsHub").collection("services");
 
     const orderCollection = client.db("gearsHub").collection("orders");
+    const userCollection = client.db("gearsHub").collection("users");
 
     app.get("/service", async (req, res) => {
       const query = {};
@@ -39,6 +40,19 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const singlePart = await collection.findOne(query);
       res.send(singlePart);
+    });
+
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const user = req.body;
+      const updateDoc = {
+        $set: user,
+      };
+
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
     });
 
     app.patch("/service/:id", async (req, res) => {
